@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="static/assets/images/logo_icon.ico" type="image/x-icon"/>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="static/assets/bootstrap/css/bootstrap.min.css">
+  <!-- Font & Icon -->
+  <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="static/assets/css/ionicons.min.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="static/assets/css/default.min.css" id="color-opt">
+  <!-- Demo -->
+  <link rel="stylesheet" href="static/assets/css/demo.css">
+
+  <title>Result</title>
+</head>
+<body>
+  <div class="sticky-wrapper">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-header fixed-top sticky sticky-dark pl-0 pr-0">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img src="static/assets/images/logo.png" height="35" />
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="ion ion-md-menu"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/home">Prediction</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/about">Graph</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/notebook">Notebook</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/login">Signout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <section id="header" class="height-half" data-image="static/assets/images/header.jpg">
+    <div class="overlay-bg"></div>
+    <div class="d-table w-100 h-100">
+      <div class="d-table-cell align-middle">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <h2 class="header-description mt-3">Welcome <br/>to Dashboard</h2>
+              <h1 class="header-title mt-4">CIFAKE: Image Classification and Explainable Identification of AI-Generated Synthetic Images.</h1>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="container text-center">
+      <h1 class="section-title"> RESULT </h1>
+      
+      <div class="mt-5">
+        <div class="row feature">
+          <div class="col-md-6">
+            <br>
+
+          <h1 class="text-dark mb-5"> Your Prediction </h1>
+          
+          <center><font face="verdana" color="black">The Upload Image is:  {{ msg|safe}} </font><br/></center>
+					
+          <br><br><br><br>
+
+          <img src="data:image/png;base64, {{ img }}" alt="" />
+
+      </div>
+      </div>
+      <br>
+                
+      
+      <br />
+      <br />
+      <a href="{{ url_for('home') }}"><button class="button mt-3">Try again?</button></a>
+      
+    </div>
+  </div>
+
+  
+  
+</div>
+</div>
+</section>
+<br><br><br><br><br>
+
+<div class="border-separator"></div>
+
+<div class="footer-bottom">
+  <div class="d-flex">
+    2024 © Revolution Corp
+    <div class="ml-auto">
+      <ul class="list-socmed list-unstyled m-0">
+        <li>
+          <a href="#"><i class="ion ion-logo-facebook"></i></a>
+        </li>
+        <li>
+          <a href="#"><i class="ion ion-logo-twitter"></i></a>
+        </li>
+        <li>
+          <a href="#"><i class="ion ion-logo-instagram"></i></a>
+        </li>
+        <li>
+          <a href="#"><i class="ion ion-logo-dribbble"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+</footer>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="static/assets/js/jquery.3.2.1.min.js"></script>
+<script src="static/assets/js/popper.min.js"></script>
+<script src="static/assets/js/bootstrap.min.js"></script>
+<script src="static/assets/js/app.js"></script>
+<!-- Demo -->
+<script src="static/assets/js/demo.js"></script>
+</body>
+</html>
