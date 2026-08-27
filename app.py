@@ -155,24 +155,29 @@ def predict():
 
             display_img = cv2.imread(test_path)
             display_img = cv2.resize(display_img, (500, 300))
-            display_img = cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB)
             
             predicted_label = labels[predict_idx] if predict_idx < len(labels) else "Unknown"
             cv2.putText(display_img, 'Predicted As : ' + predicted_label, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
             output = 'Predicted As : ' + predicted_label
 
-            figure, axis = plt.subplots(nrows=1, ncols=2, figsize=(10, 6))
-            axis[0].set_title("Original Image")
-            axis[1].set_title("Explainable Grad-Cam Image")
-            axis[0].imshow(display_img)
-            axis[1].imshow(grad_cam[:, :, 31], cmap='hot')
-            axis[0].axis('off')
-            axis[1].axis('off')
+            # OpenCV side-by-side image generation (uses virtually 0MB memory compared to Matplotlib)
+            heatmap = grad_cam[:, :, 31]
+            heatmap = np.maximum(heatmap, 0)
+            max_val = np.max(heatmap)
+            if max_val > 0:
+                heatmap = heatmap / max_val
+            heatmap = np.uint8(255 * heatmap)
+            
+            # Apply color map and resize
+            heatmap_color = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+            heatmap_color = cv2.resize(heatmap_color, (500, 300))
+            
+            # Concatenate original image and heatmap side-by-side
+            combined = np.hstack((display_img, heatmap_color))
 
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', bbox_inches='tight')
-            plt.close(figure)
-            img_b64 = base64.b64encode(buf.getvalue()).decode()
+            # Encode image to base64 directly using cv2
+            _, encoded_img = cv2.imencode('.png', combined)
+            img_b64 = base64.b64encode(encoded_img).decode()
 
             return render_template('after.html', msg=output, img=img_b64)
         except Exception as e:
