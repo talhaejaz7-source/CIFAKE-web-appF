@@ -17,6 +17,11 @@ import matplotlib.pyplot as plt
 
 from flask import Flask, render_template, request, redirect, url_for
 
+import tensorflow as tf
+# Limit TensorFlow CPU threading to 1 to minimize memory footprint on 512MB RAM Render server
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
+
 from keras.layers import MaxPooling2D, Dense, Dropout, Flatten, Convolution2D
 from keras.models import Sequential, Model
 
