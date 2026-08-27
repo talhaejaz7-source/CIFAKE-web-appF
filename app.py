@@ -30,6 +30,17 @@ email = ""
 number = ""
 password = ""
 
+# Initialize SQLite database and table if they do not exist (crucial for clean deployments)
+try:
+    con = sqlite3.connect('signup.db')
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS info(user varchar(250), email varchar(250), password varchar(250), mobile int, name varchar(250))")
+    con.commit()
+    con.close()
+    print("Database initialized successfully.")
+except Exception as e:
+    print("Error initializing database:", e)
+
 path = "Dataset"
 if os.path.exists(path):
     labels = sorted([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))])
