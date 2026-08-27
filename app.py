@@ -136,31 +136,42 @@ def index():
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'POST':
+        print("\n>>> [predict] Received POST request from client", flush=True)
         try:
             if 'files' not in request.files:
+                print(">>> [predict] 'files' not in request.files", flush=True)
                 return redirect(url_for('home'))
             
             file = request.files['files']
             if file.filename == '':
+                print(">>> [predict] Empty filename, redirecting to home", flush=True)
                 return redirect(url_for('home'))
 
+            print(f">>> [predict] Uploaded file name: {file.filename}", flush=True)
             os.makedirs("static", exist_ok=True)
             test_path = os.path.join("static", "test.jpg")
             
             file.save(test_path)
+            print(">>> [predict] File saved locally to static/test.jpg", flush=True)
 
             image = cv2.imread(test_path, cv2.IMREAD_COLOR)
             if image is None:
+                print(">>> [predict] cv2 could not read the image file!", flush=True)
                 return redirect(url_for('home'))
 
+            print(">>> [predict] Image read successfully. Resizing...", flush=True)
             # Use INTER_AREA interpolation to avoid pixel aliasing when downscaling high-res photos to 32x32
             img = cv2.resize(image, (32, 32), interpolation=cv2.INTER_AREA)
             im2arr = np.array(img).reshape(1, 32, 32, 3).astype('float32') / 255.0
 
+            print(">>> [predict] Running model prediction...", flush=True)
             prediction = extension_model(im2arr, training=False).numpy()
             predict_idx = np.argmax(prediction)
+            print(f">>> [predict] Prediction complete: {labels[predict_idx]}", flush=True)
 
+            print(">>> [predict] Generating Grad-CAM...", flush=True)
             grad_cam = GradCamImage(test_path)
+            print(">>> [predict] Grad-CAM complete", flush=True)
 
             display_img = cv2.imread(test_path)
             display_img = cv2.resize(display_img, (500, 300))
@@ -187,14 +198,15 @@ def predict():
             # Encode image to base64 directly using cv2
             _, encoded_img = cv2.imencode('.png', combined)
             img_b64 = base64.b64encode(encoded_img).decode()
+            print(">>> [predict] Base64 encoding complete. Rendering after.html...", flush=True)
 
             return render_template('after.html', msg=output, img=img_b64)
         except Exception as e:
             import traceback
-            print("\n" + "!"*50)
-            print(" [PREDICT ERROR TRACEBACK]:")
+            print("\n" + "!"*50, flush=True)
+            print(" [PREDICT ERROR TRACEBACK]:", flush=True)
             traceback.print_exc()
-            print("!"*50 + "\n")
+            print("!"*50 + "\n", flush=True)
             return f"Error during prediction: {str(e)}. Please check Render dashboard Logs for detail."
     
     return redirect(url_for('home'))
