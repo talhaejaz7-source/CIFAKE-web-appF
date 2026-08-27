@@ -58,17 +58,6 @@ def getLabel(name):
     return index
 
 
-def GradCamImage(image_path, ext_model):
-    grad_cam = Model(inputs=ext_model.inputs, outputs=ext_model.layers[0].output)
-    image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-    if image is None:
-        return np.zeros((30, 30, 32))
-    img = cv2.resize(image, (32, 32), interpolation=cv2.INTER_AREA)
-    im2arr = np.array(img).reshape(1, 32, 32, 3).astype('float32') / 255.0
-    preds = grad_cam.predict(im2arr)[0]
-    return preds
-
-
 def getModel():
     extension_model = Sequential()
     extension_model.add(Convolution2D(32, (3, 3), input_shape=(32, 32, 3), activation='relu'))
@@ -84,6 +73,21 @@ def getModel():
     extension_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     extension_model.load_weights("model/extension_weights.hdf5")
     return extension_model
+
+
+# Initialize model and Grad-CAM globally once at startup to prevent OOM memory leak
+extension_model = getModel()
+grad_cam_model = Model(inputs=extension_model.inputs, outputs=extension_model.layers[0].output)
+
+
+def GradCamImage(image_path):
+    image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+    if image is None:
+        return np.zeros((30, 30, 32))
+    img = cv2.resize(image, (32, 32), interpolation=cv2.INTER_AREA)
+    im2arr = np.array(img).reshape(1, 32, 32, 3).astype('float32') / 255.0
+    preds = grad_cam_model.predict(im2arr)[0]
+    return preds
 
 
 @app.route("/about")
@@ -127,7 +131,6 @@ def predict():
         
         file.save(test_path)
 
-        extension_model = getModel()
         image = cv2.imread(test_path, cv2.IMREAD_COLOR)
         if image is None:
             return redirect(url_for('home'))
@@ -139,7 +142,7 @@ def predict():
         prediction = extension_model.predict(im2arr)
         predict_idx = np.argmax(prediction)
 
-        grad_cam = GradCamImage(test_path, extension_model)
+        grad_cam = GradCamImage(test_path)
 
         display_img = cv2.imread(test_path)
         display_img = cv2.resize(display_img, (500, 300))
