@@ -87,6 +87,15 @@ def getModel():
 extension_model = getModel()
 grad_cam_model = Model(inputs=extension_model.inputs, outputs=extension_model.layers[0].output)
 
+# Warm up TensorFlow execution graph at startup to avoid delay on first user request
+try:
+    dummy_input = np.zeros((1, 32, 32, 3), dtype='float32')
+    extension_model(dummy_input, training=False)
+    grad_cam_model(dummy_input, training=False)
+    print("TensorFlow graph warmed up successfully.")
+except Exception as e:
+    print("Warning: TensorFlow warm-up failed:", e)
+
 
 def GradCamImage(image_path):
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
@@ -94,7 +103,7 @@ def GradCamImage(image_path):
         return np.zeros((30, 30, 32))
     img = cv2.resize(image, (32, 32), interpolation=cv2.INTER_AREA)
     im2arr = np.array(img).reshape(1, 32, 32, 3).astype('float32') / 255.0
-    preds = grad_cam_model.predict(im2arr)[0]
+    preds = grad_cam_model(im2arr, training=False).numpy()[0]
     return preds
 
 
@@ -148,7 +157,7 @@ def predict():
             img = cv2.resize(image, (32, 32), interpolation=cv2.INTER_AREA)
             im2arr = np.array(img).reshape(1, 32, 32, 3).astype('float32') / 255.0
 
-            prediction = extension_model.predict(im2arr)
+            prediction = extension_model(im2arr, training=False).numpy()
             predict_idx = np.argmax(prediction)
 
             grad_cam = GradCamImage(test_path)
