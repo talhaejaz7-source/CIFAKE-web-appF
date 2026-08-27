@@ -35,6 +35,14 @@ try:
     con = sqlite3.connect('signup.db')
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS info(user varchar(250), email varchar(250), password varchar(250), mobile int, name varchar(250))")
+    
+    # Insert a default tester/admin account so login is guaranteed to work even after Render container restarts
+    cur.execute("SELECT * FROM info WHERE user='admin'")
+    if cur.fetchone() is None:
+        cur.execute("INSERT INTO `info` (`user`, `email`, `password`, `mobile`, `name`) VALUES (?, ?, ?, ?, ?)",
+                    ('admin', 'admin@test.com', 'Admin#123', 9999999999, 'Admin Tester'))
+        print("Default tester/admin account created (Username: admin, Password: Admin#123).")
+        
     con.commit()
     con.close()
     print("Database initialized successfully.")
